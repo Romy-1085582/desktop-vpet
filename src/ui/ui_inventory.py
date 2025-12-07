@@ -21,6 +21,9 @@ class UIInventory(UIElement):
 
         self.tooltip = UITooltip(x + self.width + 20, y) # Initialized here, instead of UI_manager, because it is completely tied to inventory
         self.tooltip_pos = (self.width + 20, 0) # Relative to inventory X and Y
+
+        self.remove_tooltip_after = 0.2  # Seconds to wait before removing tooltip
+        self.remove_tooltip_timer = 0
         
         
         super().__init__(x, y, self.width, self.height)
@@ -40,6 +43,7 @@ class UIInventory(UIElement):
     def update(self, dt):
         self.show_tooltip()
         self.tooltip.update(dt)
+        self.remove_tooltip_timer += dt
         super().update(dt)
 
     def draw(self, screen):
@@ -53,7 +57,9 @@ class UIInventory(UIElement):
             if button.hovered:
                 self.tooltip.set_content(itemid=button.itemid)
                 self.tooltip.active = True
+                self.remove_tooltip_timer = 0
                 return
-        self.tooltip.active = False
+        if self.remove_tooltip_timer >= self.remove_tooltip_after:
+            self.tooltip.active = False
         
         

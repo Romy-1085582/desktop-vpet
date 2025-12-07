@@ -31,8 +31,7 @@ class GameManager:
             EVENTBUS.publish(GameEvent(EventTypes.MOUSE_UP, {"pos": event.pos, "button": 1}))
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
-                print("press P!")
-                EVENTBUS.publish(GameEvent(EventTypes.DEBUG_PICK_UP))
+                pass
             elif event.key == pygame.K_m:
                 print("Moving to debug point...")
                 EVENTBUS.publish(GameEvent(EventTypes.MOVE_START, {"x": 500}))

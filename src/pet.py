@@ -48,7 +48,6 @@ class Pet(PhysicsEntity):
         self.angle = 0
 
         self.in_action = False
-
         
 
         #Development/temporary values. Replace with more solid data structures.

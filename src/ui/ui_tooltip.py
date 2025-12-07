@@ -23,6 +23,7 @@ class UITooltip(UIElement):
         
         super().__init__(x, y, self.width, self.height)
 
+        self.close_button_rect = None  # No close button for tooltip
         
     def set_content(self, itemid=None, text=None): #Called externally
         if itemid is not None:

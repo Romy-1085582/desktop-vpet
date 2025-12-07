@@ -13,7 +13,7 @@ class UIManager:
 
         # types of ui elements
         self.ui_elements.append(UIInventory(x=100, y=100))
-        self.ui_elements.append(UIDebug(x=500, y=100))
+        self.ui_elements.append(UIDebug(x=510, y=300))
 
     def subscribe_to_events(self):
         EVENTBUS.subscribe(EventTypes.MOUSE_DOWN, self.on_mouse_down)

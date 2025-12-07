@@ -43,7 +43,8 @@ class UIElement:
             self._dragging_update()
             self.rect.topleft = (self.x, self.y)
             self.rect.size = (self.width, self.height)
-            self.close_button_rect.topleft = (self.x + self.width - 65, self.y + 10)
+            if self.close_button_rect:
+                self.close_button_rect.topleft = (self.x + self.width - 65, self.y + 10)
             for button in self.buttons:
                 button.update(dt)
                 
@@ -52,7 +53,8 @@ class UIElement:
     def draw(self, screen):
         if self.active:
             screen.blit(self.draw_surface, (self.x, self.y))
-            pygame.draw.rect(screen, (255, 0, 0), self.close_button_rect)  # Draw close button
+            if self.close_button_rect:
+                pygame.draw.rect(screen, (255, 0, 0), self.close_button_rect)  # Draw close button
             
             for button in self.buttons:
                 button.draw(screen)
@@ -79,9 +81,10 @@ class UIElement:
     def clicked(self, mx, my):
         #Called by UI_manager when this is the front-most hit.
         if (self.x <= mx <= self.x + self.width) and (self.y <= my <= self.y + self.height):
-            if self.close_button_rect.collidepoint(mx, my):
-                self.active = False
-                return
+            if self.close_button_rect:
+                if self.close_button_rect.collidepoint(mx, my):
+                    self.active = False
+                    return
                 
             #Check if in top buffer for dragging
             if self.y <= my <= self.y + self.top_buffer:
