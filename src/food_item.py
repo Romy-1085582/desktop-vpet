@@ -19,7 +19,6 @@ class FoodItem(PhysicsEntity):
         if "picked_up" in kwargs:
             self.picked_up = kwargs["picked_up"]
 
-
         if "itemid" in kwargs:
             self.itemid = kwargs["itemid"]
 

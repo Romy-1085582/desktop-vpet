@@ -48,6 +48,8 @@ class ContentState(idlestate.IdleState):
         self.pet.walk_speed /= 0.7
 
     def update(self, dt):
+        """This function is very messy! It's okay, because the behavior states are seperated to keep the behavior code from clogging up the pet class."""
+
         super().update(dt)
         #multiple hop action
         if self.multiple_hop_counter > 0 and self.pet.on_ground:
@@ -120,6 +122,9 @@ class ContentState(idlestate.IdleState):
             self.spin_timer = 0
             self.check_phone_timer = 0
             self.charge_timer = 0
+            self.charging_jump = False
+            self.spinning = False
+            self.checking_phone = False
             self.pet.in_action = False
        
 

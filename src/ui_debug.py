@@ -15,7 +15,7 @@ class UIDebug(UIElement):
         self.button_spacing = 10
         self.padding = 40 # Padding around the grid
         self.top_padding = 10 # Extra padding at the top for title bar
-        self.height = (self.button_height + self.button_spacing) * self.rows - self.button_spacing + 2 * self.padding + self.top_padding
+        self.height = (self.button_height + self.button_spacing) * self.rows - self.button_spacing + 2 * self.padding + self.top_padding + 50
         self.width = (self.button_width + self.button_spacing) * self.cols - self.button_spacing + 2 * self.padding
         
         super().__init__(x, y, self.width, self.height)
@@ -57,6 +57,6 @@ class UIDebug(UIElement):
         EVENTBUS.publish(GameEvent(EventTypes.ADD_ENTITY, {"TYPE": "pet"}))
 
     def clear_entities(self):
-        EVENTBUS.publish(GameEvent(EventTypes.KILL_ALL_ENTITIES))
+        EVENTBUS.publish(GameEvent(EventTypes.KILL_ALL_ENTITIES, {}))
 
     

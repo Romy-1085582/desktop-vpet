@@ -4,6 +4,8 @@ from food_item import FoodItem
 from toy_item import ToyItem
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
+from item_data import FOOD_DATA
+from item_data import TOY_DATA
 
 class EntityManager:
     def __init__(self, screen, hwnd):
@@ -21,11 +23,12 @@ class EntityManager:
         self.subscribe_to_events()
 
 
-
     def subscribe_to_events(self):
         self.eventbus.subscribe(EventTypes.MOUSE_DOWN, self.on_mouse_down)
         self.eventbus.subscribe(EventTypes.DELETE_ENTITY, self.on_delete_entity)
         self.eventbus.subscribe(EventTypes.ADD_ENTITY, self.on_add_entity)
+        self.eventbus.subscribe(EventTypes.KILL_ALL_ENTITIES, self.on_kill_all_entities)
+
 
     def add_entity(self, entity_type, **kwargs):
         if entity_type in self.entity_factories:
@@ -34,6 +37,7 @@ class EntityManager:
         else:
             raise ValueError(f"Unknown entity type: {entity_type}")
         
+
     def delete_entity(self, entity):
         if entity in self.entities:
             self.entities.remove(entity)
@@ -61,7 +65,7 @@ class EntityManager:
         if event.payload.get("button") != 1:
             return 
         mx, my = event.payload["pos"]
-        # Reverse = treat later-added as "front"/top (matches your draw order).
+        # Reverse = treat later-added as "front"/top (matches draw order).
         for entity in reversed(self.entities):
             if entity.rect.collidepoint((mx, my)):
                 # Tell only this one to pick up; everyone else stays put.
@@ -75,13 +79,17 @@ class EntityManager:
             self.delete_entity(entity_to_delete) 
 
     def on_add_entity(self, event):
-        entity_type = event.payload.get("TYPE")
+        id = event.payload.get("itemid", 0)
         x = event.payload.get("X", 0)
         y = event.payload.get("Y", 0)
-        if entity_type:
+        if id is not None:
+            if id in FOOD_DATA:
+                entity_type = "food"
+            elif id in TOY_DATA:
+                entity_type = "toy"
             self.add_entity(entity_type, x=x, y=y, **event.payload)
 
-    def on_kill_all_entities(self):
+    def on_kill_all_entities(self, event):
         for entity in self.entities:
             entity.on_destroy()
         self.entities.clear()

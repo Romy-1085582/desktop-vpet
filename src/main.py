@@ -10,8 +10,7 @@ from event_manager import GameEvent
 
 
 #set constants 
-FUCSHIA = (255, 0, 128)  # Transparency color
-dark_red = (255, 100, 0)
+FUCSHIA = (255, 0, 128)  # Transparency color. This color will essentially be keyed out like a green screen. It's a janky solution but it's the only viable option using this library <3
 
 class Main(): 
     def __init__(self):
@@ -20,12 +19,12 @@ class Main():
         info = pygame.display.Info()
         w = info.current_w
         h = info.current_h
-        self.screen = pygame.display.set_mode((w, h), pygame.NOFRAME)  # For borderless, use pygame.NOFRAME
+        self.screen = pygame.display.set_mode((w, h), pygame.NOFRAME)
         self.render_surface = pygame.Surface((w, h), pygame.SRCALPHA)
         self.hwnd = self._windows_config()
 
         self._done = False
-        self.pixelation = 3
+        self.pixelation = 1
 
         #run game
         self.run()
@@ -58,7 +57,7 @@ class Main():
                 game.handle_event(event) #Pass the event through to the game to figure out what da heyll to do with it
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p:
-                        if self.pixelation == 1:
+                        if self.pixelation == 1: #Ya ok this is really jank but i'll edit later
                             self.pixelation = 3
                         else: self.pixelation = 1
                     if event.key == pygame.K_q:
