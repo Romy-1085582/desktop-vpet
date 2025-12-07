@@ -1,0 +1,25 @@
+class EventTypes:
+    MOUSE_CLICK = "mouse_click"
+    DRAG_START = "drag_start"
+    DRAG_MOVE = "drag_move"
+    DRAG_END = "drag_end"
+    ESCAPE_KEY = "escape"
+    DEBUG_PICK_UP = "debug_pick_up"
+    MOUSE_DOWN = "mouse_down"
+    MOUSE_UP = "mouse_up"
+    MOVE_START = "move_start"
+    MOVE_ARRIVE = "move_arrive" #When the pet arrives at its targeted location
+    PET_HOP = "pet_hop" #For the pet to hop in place
+    SPAWN_FOOD = "spawn_food" 
+    BROADCAST_LOCATION = "broadcast_location"
+    DELETE_ENTITY = "delete_entity" # payload: {"ENTITY": entity_to_delete}
+    TOGGLE_DEBUG_MODE = "toggle_debug_mode"
+    ADD_UI_ELEMENT = "add_ui_element" # payload: {"X" : x, "Y": y, "WIDTH": width, "HEIGHT": height, "TYPE": "type"}
+    REMOVE_UI_ELEMENT = "remove_ui_element" # payload: {"ELEMENT": element_to_remove}
+    ADD_ENTITY = "add_entity" # payload: {"TYPE": type, "X": x, "Y": y}
+    TOGGLE_UI_ELEMENT = "toggle_ui_element" # payload: {"TYPE": type}
+    KILL_ALL_ENTITIES = "kill_all_entities"
+
+    DEBUG_FEED = "debug_feed"
+    DEBUG_PLAY = "debug_play"
+    DEBUG_SLEEP = "debug_sleep"
