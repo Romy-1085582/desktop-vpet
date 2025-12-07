@@ -5,7 +5,7 @@ from event_manager import EventBus
 from event_manager import GameEvent
 from singletons.event_bus_singleton import EVENTBUS
 from load_files import LoadFiles
-from item_data import FOOD_DATA
+from entity_data import FOOD_DATA
 
 class FoodItem(PhysicsEntity):
     def __init__(self, x, y,screen, hwnd, **kwargs):

@@ -27,7 +27,7 @@ class UIButton:
 
         if self.image is None and self.itemid is not None:
             #Load image based on itemid from FOOD_DATA or TOY_DATA
-            from item_data import FOOD_DATA, TOY_DATA
+            from entity_data import FOOD_DATA, TOY_DATA
             if self.itemid in FOOD_DATA:
                 sprite_path = "assets/sprites/" + FOOD_DATA[self.itemid]["sprite"]
             elif self.itemid in TOY_DATA:

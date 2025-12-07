@@ -2,7 +2,7 @@ import pygame
 from entity_manager import EntityManager
 from singletons.event_bus_singleton import EVENTBUS
 from event_manager import GameEvent
-from UI_manager import UIManager
+from ui.UI_manager import UIManager
 from event_types import EventTypes
 
 class GameManager:

@@ -5,7 +5,7 @@ from event_manager import EventBus
 from event_manager import GameEvent
 from singletons.event_bus_singleton import EVENTBUS
 from load_files import LoadFiles
-from item_data import TOY_DATA
+from entity_data import TOY_DATA
 
 class ToyItem(PhysicsEntity):
     def __init__(self, x, y, screen, hwnd, bounce=True, **kwargs):

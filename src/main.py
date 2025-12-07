@@ -23,7 +23,6 @@ class Main():
         self.render_surface = pygame.Surface((w, h), pygame.SRCALPHA)
         self.hwnd = self._windows_config()
 
-        self._done = False
         self.pixelation = 1
 
         #run game

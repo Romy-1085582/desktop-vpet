@@ -3,7 +3,7 @@ from load_files import LoadFiles
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent
-from ui_button import UIButton
+from ui.ui_button import UIButton
 
 class UIElement:
     def __init__(self, x, y, width, height):
@@ -23,7 +23,7 @@ class UIElement:
 
         self.test_image = LoadFiles.load_and_threshold_alpha("assets/ui/panel.png")
 
-        self.border_size = (100, 100, 100, 100)
+        self.border_size = (50, 50, 50, 50)
         self.top_buffer = 40 # Buffer from the top edge for dragging
         self.min_size = (300, 300)
         self.close_button_rect = pygame.Rect(self.x + self.width - 100, self.y + 30, 20, 20)

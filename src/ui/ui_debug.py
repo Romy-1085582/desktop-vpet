@@ -1,5 +1,5 @@
-from ui_element import UIElement
-from ui_button import UIButton
+from ui.ui_element import UIElement
+from ui.ui_button import UIButton
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent

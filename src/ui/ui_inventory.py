@@ -1,9 +1,10 @@
-from ui_element import UIElement
-from ui_button import UIButton
+from ui.ui_element import UIElement
+from ui.ui_button import UIButton
+from ui.ui_tooltip import UITooltip
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent
-from item_data import FOOD_DATA
+
 
 class UIInventory(UIElement):
     def __init__(self, x, y):
@@ -17,6 +18,10 @@ class UIInventory(UIElement):
         self.top_padding = 10 # Extra padding at the top for title bar
         self.height = (self.button_size + self.button_spacing) * self.rows - self.button_spacing + 2 * self.padding + self.top_padding
         self.width = (self.button_size + self.button_spacing) * self.cols - self.button_spacing + 2 * self.padding
+
+        self.tooltip = UITooltip(x + self.width + 20, y) # Initialized here, instead of UI_manager, because it is completely tied to inventory
+        self.tooltip_pos = (self.width + 20, 0) # Relative to inventory X and Y
+        
         
         super().__init__(x, y, self.width, self.height)
 
@@ -24,7 +29,6 @@ class UIInventory(UIElement):
         
     def populate_inventory(self):
         #For now, just add empty buttons in a grid.
-        
         self.buttons = []
         for i, row in enumerate(range(self.rows)):
             for j, col in enumerate(range(self.cols)):
@@ -33,4 +37,23 @@ class UIInventory(UIElement):
                 new_button = UIButton(btn_x, btn_y, self.button_size, self.button_size, itemid=(i * self.cols + j))
                 self.buttons.append(new_button)
         
+    def update(self, dt):
+        self.show_tooltip()
+        self.tooltip.update(dt)
+        super().update(dt)
 
+    def draw(self, screen):
+        self.tooltip.draw(screen)
+        super().draw(screen)
+    
+    def show_tooltip(self):
+        self.tooltip.x = self.x + self.tooltip_pos[0]
+        self.tooltip.y = self.y + self.tooltip_pos[1]
+        for button in self.buttons:
+            if button.hovered:
+                self.tooltip.set_content(itemid=button.itemid)
+                self.tooltip.active = True
+                return
+        self.tooltip.active = False
+        
+        

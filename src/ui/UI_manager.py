@@ -2,9 +2,9 @@ import pygame
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent
-from ui_element import UIElement
-from ui_inventory import UIInventory
-from ui_debug import UIDebug
+from ui.ui_element import UIElement
+from ui.ui_inventory import UIInventory
+from ui.ui_debug import UIDebug
 
 class UIManager:
     def __init__(self):

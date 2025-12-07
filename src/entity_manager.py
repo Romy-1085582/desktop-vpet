@@ -4,8 +4,8 @@ from food_item import FoodItem
 from toy_item import ToyItem
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
-from item_data import FOOD_DATA
-from item_data import TOY_DATA
+from entity_data import FOOD_DATA
+from entity_data import TOY_DATA
 
 class EntityManager:
     def __init__(self, screen, hwnd):
@@ -79,7 +79,7 @@ class EntityManager:
             self.delete_entity(entity_to_delete) 
 
     def on_add_entity(self, event):
-        id = event.payload.get("itemid", 0)
+        id = event.payload.get("itemid", None)
         x = event.payload.get("X", 0)
         y = event.payload.get("Y", 0)
         if id is not None:
@@ -88,6 +88,10 @@ class EntityManager:
             elif id in TOY_DATA:
                 entity_type = "toy"
             self.add_entity(entity_type, x=x, y=y, **event.payload)
+            return
+        if event.payload.get("TYPE") == "pet":
+            self.add_entity("pet", x=x, y=y, **event.payload)
+        
 
     def on_kill_all_entities(self, event):
         for entity in self.entities:
