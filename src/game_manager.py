@@ -13,7 +13,7 @@ class GameManager:
         # Managers
         self.entity_manager = EntityManager(screen, hwnd)
         
-#        self.state_manager = StateManager()
+        #self.state_manager = StateManager()
         self.ui_manager = UIManager()
 
         # Expandable dictionary for access if needed
@@ -32,19 +32,7 @@ class GameManager:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
                 pass
-            elif event.key == pygame.K_m:
-                print("Moving to debug point...")
                 EVENTBUS.publish(GameEvent(EventTypes.MOVE_START, {"x": 500}))
-            elif event.key == pygame.K_f:
-                self.entity_manager.add_entity("food", x=500, y=500)
-            elif event.key == pygame.K_t:
-                self.entity_manager.add_entity("toy", x=600, y=500)
-            elif event.key == pygame.K_1:
-                EVENTBUS.publish(GameEvent(EventTypes.DEBUG_FEED))
-            elif event.key == pygame.K_2:
-                EVENTBUS.publish(GameEvent(EventTypes.DEBUG_PLAY))
-            elif event.key == pygame.K_3:
-                EVENTBUS.publish(GameEvent(EventTypes.DEBUG_SLEEP))
             elif event.key == pygame.K_e:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"inventory"}))
             elif event.key == pygame.K_BACKQUOTE:
