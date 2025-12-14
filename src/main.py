@@ -10,8 +10,6 @@ from event_manager import GameEvent
 
 
 #set constants 
-FUCSHIA = (255, 0, 128)  # Transparency color. This color will essentially be keyed out like a green screen. It's a janky solution but it's the only viable option using this library <3
-
 class Main(): 
     def __init__(self):
         pygame.init()

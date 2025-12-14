@@ -14,12 +14,26 @@ class RenderPipeline:
         self.layerdebug = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
 
 
+    # First step - Clear all layers
     def clear_layers(self):
         self.layerui.fill(FUCSHIA)
         self.layergame.fill(FUCSHIA)
         self.layereffects.fill(FUCSHIA)
         self.layerdebug.fill(FUCSHIA)
 
+    # Second step - Draw to a specified layer - Every entity will draw to their respective layer this frame.
+    def draw_to_layer(self, layer_name, surface, position):
+        if layer_name == "ui":
+            self.layerui.blit(surface, position)
+        elif layer_name == "game":
+            self.layergame.blit(surface, position)
+        elif layer_name == "effects":
+            self.layereffects.blit(surface, position)
+        elif layer_name == "debug":
+            self.layerdebug.blit(surface, position)             
+
+
+    # Last step - Blit all layers to the main screen
     def blit_layers(self, pixelation=1):
         # First blit game layer
         combined_surface = self.layergame.copy()
