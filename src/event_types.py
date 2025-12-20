@@ -19,6 +19,9 @@ class EventTypes:
     ADD_ENTITY = "add_entity" # payload: {"TYPE": type, "X": x, "Y": y}
     TOGGLE_UI_ELEMENT = "toggle_ui_element" # payload: {"TYPE": type}
     KILL_ALL_ENTITIES = "kill_all_entities"
+    TOGGLE_PIXELATION = "toggle_pixelation"
+    INCREASE_PIXELATION = "increase_pixelation"
+    DECREASE_PIXELATION = "decrease_pixelation"
 
     DEBUG_FEED = "debug_feed"
     DEBUG_PLAY = "debug_play"

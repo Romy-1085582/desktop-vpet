@@ -82,7 +82,6 @@ class EntityManager:
         id = event.payload.get("itemid", None)
         x = event.payload.get("X", 0)
         y = event.payload.get("Y", 0)
-        print(id)
         if id is not None:
             if id in FOOD_DATA:
                 entity_type = "food"

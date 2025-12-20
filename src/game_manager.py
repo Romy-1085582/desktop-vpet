@@ -34,6 +34,13 @@ class GameManager:
         self.pixelation = True
         self.pixelation_level = 3
 
+        self.subscribe_to_events()
+
+    def subscribe_to_events(self):
+        EVENTBUS.subscribe(EventTypes.TOGGLE_PIXELATION, self.on_toggle_pixelation)
+        EVENTBUS.subscribe(EventTypes.INCREASE_PIXELATION, self.on_increase_pixelation)
+        EVENTBUS.subscribe(EventTypes.DECREASE_PIXELATION, self.on_decrease_pixelation)
+
     def handle_event(self, event):
         #handle events corrosponding to certain keys or mouse clicks.
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -42,13 +49,11 @@ class GameManager:
             EVENTBUS.publish(GameEvent(EventTypes.MOUSE_UP, {"pos": event.pos, "button": 1}))
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
-                self.pixelation = not self.pixelation
+                EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_PIXELATION))
             elif event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
-                if self.pixelation_level < 5:
-                    self.pixelation_level += .5
+                EVENTBUS.publish(GameEvent(EventTypes.INCREASE_PIXELATION))
             elif event.key == pygame.K_MINUS or event.key == pygame.K_UNDERSCORE:
-                if self.pixelation_level > 1:
-                    self.pixelation_level -= .5
+                EVENTBUS.publish(GameEvent(EventTypes.DECREASE_PIXELATION))
             elif event.key == pygame.K_e:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"inventory"}))
             elif event.key == pygame.K_BACKQUOTE:
@@ -73,6 +78,17 @@ class GameManager:
 
     def add_entity(self, entity_type, *args, **kwargs):
         self.entity_manager.add_entity(entity_type, *args, **kwargs)
+
+    def on_toggle_pixelation(self, event):
+        self.pixelation = not self.pixelation
+
+    def on_increase_pixelation(self, event):
+        if self.pixelation_level < 5:
+            self.pixelation_level += .5
+    
+    def on_decrease_pixelation(self, event):
+        if self.pixelation_level > 1:
+            self.pixelation_level -= .5
 
 
 
