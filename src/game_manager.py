@@ -31,6 +31,9 @@ class GameManager:
             "ui": self.ui_manager,
         }   
 
+        self.pixelation = True
+        self.pixelation_level = 3
+
     def handle_event(self, event):
         #handle events corrosponding to certain keys or mouse clicks.
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -39,8 +42,13 @@ class GameManager:
             EVENTBUS.publish(GameEvent(EventTypes.MOUSE_UP, {"pos": event.pos, "button": 1}))
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
-                pass
-                EVENTBUS.publish(GameEvent(EventTypes.MOVE_START, {"x": 500}))
+                self.pixelation = not self.pixelation
+            elif event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
+                if self.pixelation_level < 5:
+                    self.pixelation_level += .5
+            elif event.key == pygame.K_MINUS or event.key == pygame.K_UNDERSCORE:
+                if self.pixelation_level > 1:
+                    self.pixelation_level -= .5
             elif event.key == pygame.K_e:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"inventory"}))
             elif event.key == pygame.K_BACKQUOTE:
@@ -57,7 +65,7 @@ class GameManager:
             surface.fill((0,0,0,0))
         self.ui_manager.draw(self.render_surfaces)
         self.entity_manager.draw_all(self.render_surfaces)
-        pixelated_surface = RenderPipeline.pixelate_surface(self.render_surfaces["game"], 3)  # Adjust pixel size as needed
+        pixelated_surface = RenderPipeline.pixelate_surface(self.render_surfaces["game"], self.pixelation_level) if self.pixelation else self.render_surfaces["game"]
         screen.blit(self.render_surfaces["ui"], (0,0))
         screen.blit(pixelated_surface, (0, 0))
         pygame.display.flip()

@@ -23,7 +23,6 @@ class Main():
         self.render_surface = pygame.Surface((w, h), pygame.SRCALPHA)
         self.hwnd = self._windows_config()
 
-        self.pixelation = 1
 
         #run game
         self.run()
@@ -55,10 +54,6 @@ class Main():
                     running = False
                 game.handle_event(event) #Pass the event through to the game to figure out what da heyll to do with it
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p:
-                        if self.pixelation == 1: #Ya ok this is really jank but i'll edit later
-                            self.pixelation = 3
-                        else: self.pixelation = 1
                     if event.key == pygame.K_q:
                         #toggle debug mode
                         EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_DEBUG_MODE))
