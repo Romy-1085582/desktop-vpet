@@ -317,19 +317,19 @@ class Pet(PhysicsEntity):
                 self.angle = 0
 
     
-    def draw_tick(self, screen):
+    def draw(self, surfaces):
         draw_sprite = self.current_sprite
         draw_rect = self.rect
         if self.picked_up:
             draw_sprite, draw_rect = self.rotate_around_point(draw_sprite)
         if not self.facing_left:
             draw_sprite = pygame.transform.flip(draw_sprite, True, False)
-        screen.blit(draw_sprite, draw_rect.topleft)
+        surfaces["game"].blit(draw_sprite, draw_rect.topleft)
 
         if self.debug_mode:
-            self._draw_debug_info(screen)
+            self._draw_debug_info(surfaces)
 
-    def _draw_debug_info(self, screen):
+    def _draw_debug_info(self, surfaces):
         """Draws the pet's behaviour state and stats above its head for debugging."""
         font = pygame.font.SysFont(None, 24)
         info_lines = [
@@ -341,7 +341,7 @@ class Pet(PhysicsEntity):
         ]
         for i, line in enumerate(info_lines):
             text_surf = font.render(line, True, (255, 255, 255))
-            screen.blit(text_surf, (self.rect.x, self.rect.y - 20 * (len(info_lines) - i)))
+            surfaces["ui"].blit(text_surf, (self.rect.x, self.rect.y - 20 * (len(info_lines) - i)))
 
 
 

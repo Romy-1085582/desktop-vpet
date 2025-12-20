@@ -4,6 +4,10 @@ from singletons.event_bus_singleton import EVENTBUS
 from event_manager import GameEvent
 from ui.UI_manager import UIManager
 from event_types import EventTypes
+from render_pipeline import RenderPipeline
+
+FUCSHIA = (255, 0, 255)
+
 
 class GameManager:
     def __init__(self, hwnd, screen):
@@ -16,12 +20,16 @@ class GameManager:
         #self.state_manager = StateManager()
         self.ui_manager = UIManager()
 
+        self.render_surfaces = {
+            "game": pygame.Surface(screen.get_size(), pygame.SRCALPHA),
+            "ui": pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        }
+
         # Expandable dictionary for access if needed
         self.managers = {
             "entity": self.entity_manager,
             "ui": self.ui_manager,
-
-        }
+        }   
 
     def handle_event(self, event):
         #handle events corrosponding to certain keys or mouse clicks.
@@ -45,8 +53,14 @@ class GameManager:
         
 
     def draw(self, screen):
-        self.ui_manager.draw(screen)
-        self.entity_manager.draw_all(screen)
+        for surface in self.render_surfaces.values():
+            surface.fill((0,0,0,0))
+        self.ui_manager.draw(self.render_surfaces)
+        self.entity_manager.draw_all(self.render_surfaces)
+        pixelated_surface = RenderPipeline.pixelate_surface(self.render_surfaces["game"], 3)  # Adjust pixel size as needed
+        screen.blit(self.render_surfaces["ui"], (0,0))
+        screen.blit(pixelated_surface, (0, 0))
+        pygame.display.flip()
 
 
     def add_entity(self, entity_type, *args, **kwargs):

@@ -50,14 +50,14 @@ class UIElement:
                 
 
 
-    def draw(self, screen):
+    def draw(self, surfaces):
         if self.active:
-            screen.blit(self.draw_surface, (self.x, self.y))
+            surfaces["ui"].blit(self.draw_surface, (self.x, self.y))
             if self.close_button_rect:
-                pygame.draw.rect(screen, (255, 0, 0), self.close_button_rect)  # Draw close button
+                pygame.draw.rect(surfaces["ui"], (255, 0, 0), self.close_button_rect)  # Draw close button
             
             for button in self.buttons:
-                button.draw(screen)
+                button.draw(surfaces)
 
 
     def _dragging_update(self):

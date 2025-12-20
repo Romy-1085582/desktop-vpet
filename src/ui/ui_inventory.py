@@ -41,13 +41,15 @@ class UIInventory(UIElement):
                 self.buttons.append(new_button)
         
     def update(self, dt):
-        self.show_tooltip()
-        self.tooltip.update(dt)
+        if self.active:
+            self.show_tooltip()
+            self.tooltip.update(dt)
         self.remove_tooltip_timer += dt
         super().update(dt)
 
     def draw(self, screen):
-        self.tooltip.draw(screen)
+        if self.active:
+            self.tooltip.draw(screen)
         super().draw(screen)
     
     def show_tooltip(self):
@@ -59,7 +61,7 @@ class UIInventory(UIElement):
                 self.tooltip.active = True
                 self.remove_tooltip_timer = 0
                 return
-        if self.remove_tooltip_timer >= self.remove_tooltip_after:
+        if self.remove_tooltip_timer >= self.remove_tooltip_after or not self.active:
             self.tooltip.active = False
         
         

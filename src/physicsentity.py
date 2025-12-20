@@ -77,14 +77,14 @@ class PhysicsEntity:
         self.movement(dt)
         #self.debug_statements()
 
-    def draw_tick(self, screen):
+    def draw(self, surfaces):
         draw_sprite = self.current_sprite
         draw_rect = self.rect
         if self.picked_up:
             draw_sprite, draw_rect = self.rotate_around_point(draw_sprite)
         if not self.facing_left:
             draw_sprite = pygame.transform.flip(draw_sprite, True, False)
-        screen.blit(draw_sprite, draw_rect.topleft)
+        surfaces["game"].blit(draw_sprite, draw_rect.topleft)
 
     def on_mouse_down(self, event):
         if event.payload.get("button") != 1:

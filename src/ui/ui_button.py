@@ -52,7 +52,7 @@ class UIButton:
             self.hovered = True
         else:
             self.hovered = False
-
+        
         if self.itemid is not None:
             if self.holding_mouse and self.prev_mx != mx and self.prev_my != my:
                 self.holding_mouse = False
@@ -62,11 +62,11 @@ class UIButton:
         self.prev_my = my
 
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (200, 200, 200), (self.x, self.y, self.width, self.height)) # Draw button background
+    def draw(self, surfaces):
+        pygame.draw.rect(surfaces["ui"], (200, 200, 200), (self.x, self.y, self.width, self.height)) # Draw button background
 
         if self.image:
-            screen.blit(self.image, (self.x, self.y))
+            surfaces["ui"].blit(self.image, (self.x, self.y))
         #If image, text on bottom right. Else, center text.
         if self.text:
             font = pygame.font.SysFont(None, 24)
@@ -76,10 +76,10 @@ class UIButton:
                 text_rect.bottomright = (self.x + self.width - 5, self.y + self.height - 5)
             else:
                 text_rect.center = (self.x + self.width // 2, self.y + self.height // 2)
-            screen.blit(text_surf, text_rect)
+            surfaces["ui"].blit(text_surf, text_rect)
         
         if self.hovered:
-            pygame.draw.rect(screen, (230, 230, 230), (self.x, self.y, self.width, self.height), 3) # Draw hover border
+            pygame.draw.rect(surfaces["ui"], (230, 230, 230), (self.x, self.y, self.width, self.height), 3) # Draw hover border
             
         
     def clicked(self, mx, my):

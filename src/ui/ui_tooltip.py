@@ -18,12 +18,14 @@ class UITooltip(UIElement):
 
         self.item_name = ""
         self.item_description = ""
-
-        
         
         super().__init__(x, y, self.width, self.height)
 
         self.close_button_rect = None  # No close button for tooltip
+
+    def subscribe_to_events(self):
+        super().subscribe_to_events()
+
         
     def set_content(self, itemid=None, text=None): #Called externally
         if itemid is not None:
@@ -41,18 +43,18 @@ class UITooltip(UIElement):
             self.item_name = ""
             self.item_description = text
 
-    def draw(self, screen):
-        super().draw(screen)
+    def draw(self, surfaces):
+        super().draw(surfaces)
         if self.active:
             #Draw the item name and description
             font = pygame.font.SysFont("arial", 24)
             name_surf = font.render(self.item_name, True, (255, 255, 255))
             desc_font = pygame.font.SysFont("arial", 18)
             description_lines = self._wrap_text(self.item_description, desc_font, self.width - 2 * self.padding)
-            screen.blit(name_surf, (self.x + self.padding, self.y + self.top_padding + self.padding))
+            surfaces["ui"].blit(name_surf, (self.x + self.padding, self.y + self.top_padding + self.padding))
             for i, line in enumerate(description_lines):
                 line_surf = desc_font.render(line, True, (250, 250, 250))
-                screen.blit(line_surf, (self.x + self.padding, self.y + self.top_padding + self.padding + 30 + i * 22))
+                surfaces["ui"].blit(line_surf, (self.x + self.padding, self.y + self.top_padding + self.padding + 30 + i * 22))
 
     def _wrap_text(self, text, font, max_width):
         words = text.split(' ')

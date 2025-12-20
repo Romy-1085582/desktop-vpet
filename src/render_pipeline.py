@@ -54,7 +54,7 @@ class RenderPipeline:
         # Blit to main screen
         self.screen.blit(combined_surface, (0, 0))
 
-    def pixelate_surface(surface, pixel_size):
+    def pixelate_surface(surface, pixel_size=3):
         """Applies a pixelation effect to the given surface."""
         width, height = surface.get_size()
         # Scale down

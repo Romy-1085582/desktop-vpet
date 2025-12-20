@@ -49,7 +49,7 @@ class EntityManager:
     
     def draw_all(self, screen):
         for entity in self.entities:
-            entity.draw_tick(screen)
+            entity.draw(screen)
 
     def spawn_pet(self, x=0, y=0, **kwargs):
         return Pet(x, y, self.screen, self.hwnd, **kwargs)
@@ -82,11 +82,14 @@ class EntityManager:
         id = event.payload.get("itemid", None)
         x = event.payload.get("X", 0)
         y = event.payload.get("Y", 0)
+        print(id)
         if id is not None:
             if id in FOOD_DATA:
                 entity_type = "food"
             elif id in TOY_DATA:
                 entity_type = "toy"
+            else:
+                return
             self.add_entity(entity_type, x=x, y=y, **event.payload)
             return
         if event.payload.get("TYPE") == "pet":

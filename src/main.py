@@ -10,6 +10,8 @@ from event_manager import GameEvent
 
 
 #set constants 
+FUCSHIA = (255, 0, 255)
+
 class Main(): 
     def __init__(self):
         pygame.init()
@@ -62,12 +64,12 @@ class Main():
                         EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_DEBUG_MODE))
 
             self.screen.fill(FUCSHIA)
-            self.render_surface.fill((0, 0, 0, 0))  # Clear with transparent
+            
             game.update(dt)
-            game.draw(self.render_surface)
-            pixelated_surface = RenderPipeline.pixelate_surface(self.render_surface, self.pixelation)  # Adjust pixel size as needed
-            self.screen.blit(pixelated_surface, (0, 0))
-            pygame.display.flip()
+            game.draw(self.screen)
+
+            
+            
     
         
     pygame.quit()
