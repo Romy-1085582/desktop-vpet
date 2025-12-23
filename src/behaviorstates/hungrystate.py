@@ -25,9 +25,10 @@ class HungryState(idlestate.IdleState):
 
         # Close enough to eat
         if dx < 50 and dy < 60:
+            nutrition = food.nutrition if hasattr(food, "nutrition") else 50
             self.pet.food_memory.pop(0)
             self.pet.target_x = None
-            self.pet.hunger += 50  # placeholder nutrition
+            self.pet.hunger += nutrition  # placeholder nutrition
             EVENTBUS.publish(GameEvent(EventTypes.DELETE_ENTITY, {"ENTITY": food}))
             return  
 
