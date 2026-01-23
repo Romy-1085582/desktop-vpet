@@ -1,6 +1,6 @@
 import pygame
 
-class AbstractAction:
+class PetAction:
     def __init__(self, duration, frames, frames_duration, valid_moods):
         self.duration = duration  # Duration of the action in seconds
         self.frames = frames  # List of frames for the action

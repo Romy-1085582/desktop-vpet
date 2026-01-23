@@ -67,7 +67,15 @@ class Pet(PhysicsEntity):
 
         # Then, the pet will have 'flags' to indicate its current state and any special conditions affecting its behavior.
         # These are Hungry, Bored, Sleepy, Dirty, Unhappy, etc.
-
+        
+        self.current_state = "WANDER"
+        self.state_flags = {
+            "HUNGRY": False,
+            "BORED": False,
+            "SLEEPY": False,
+            "DIRTY": False,
+            "UNHAPPY": False
+        }
 
         #Animation
         REL_PATH = "assets/sprites/"
@@ -106,17 +114,20 @@ class Pet(PhysicsEntity):
 
     def update_tick(self, dt):
         super().update_tick(dt)
-        self.pet_movement(dt)
-        self.update_stat_tick(dt)
-        self._animation(dt)
-        self._set_target()
-        self.update_state_stack(dt)
-        self.update_angle(dt)
-        self.clamp_stats()
-        self.update_behavior()
+
+        if self.current_state == "WANDER":
+            self.pet_movement(dt)
+            self.update_stat_tick(dt)
+            self._animation(dt)
+            self._set_target()
+            self.update_state_stack(dt)
+            self.update_angle(dt)
+            self.clamp_stats()
+            self.update_behavior()
+        if self.current_state == "SLEEP":
+            pass # Sleep behavior to be implemented
 
         self.picked_up_angle_timer += dt
-
 
     def update_stat_tick(self, dt):
         self.stat_tick_elapsed += dt
@@ -208,7 +219,6 @@ class Pet(PhysicsEntity):
 
             self.velocity.x += math.copysign(speed, dx)
             
-
 
     def _animation(self, dt):
         if self.state == "IDLE":
