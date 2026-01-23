@@ -113,6 +113,8 @@ class Pet(PhysicsEntity):
         super().update_tick(dt)
         self.clamp_stats()
         self.update_angle(dt)
+        self.pet_movement(dt)
+
 
         self.current_state.update(dt)
 
@@ -125,8 +127,30 @@ class Pet(PhysicsEntity):
 
     
 
-   
+# Awake - Movement ========================================================================================================================================================================
+    
+    def pet_movement(self, dt):
+        if self.target_x is not None and self.on_ground:
+            dx = self.target_x - self.rect.centerx
+            adx = abs(dx)
+            speed = self.walk_speed
 
+            if adx <= self.x_tol:
+                # We're within tolerance
+                self.arrival_timer += dt
+                if self.arrival_timer >= .5:  # dwell time in seconds
+                    self.rect.centerx = self.target_x
+                    self.target_x = None
+                    self.arrival_timer = 0
+            else:
+                # Outside tolerance, reset dwell timer
+                self.arrival_timer = 0
+
+            if adx < self.start_easing_distance:
+                dist_factor = adx / self.start_easing_distance
+                speed = (self.walk_speed * dist_factor) + 1
+
+            self.velocity.x += math.copysign(speed, dx)
     
 #   Universal ==============================================================================================================================================================================
 

@@ -24,16 +24,17 @@ class AwakeState(AbstractState):
         self.event_bus.subscribe(EventTypes.PET_HOP, self.hop_in_place)
         self.event_bus.subscribe(EventTypes.BROADCAST_LOCATION, self._on_locate_entity)
 
+
     def update(self, dt):
         if self.current_action is not None:
             self.update_current_action(dt)
         else:
-            self.pet_movement(dt)
             self.update_stat_tick(dt)
             self._animation(dt)
             self._set_target()
             self.update_behavior()
             self.picked_up_angle_timer += dt
+
 
         if self.pet.on_ground:
             if self.emote_timer >= self.emote_interval:
@@ -54,13 +55,16 @@ class AwakeState(AbstractState):
         self.walk_timer += dt
         self.emote_timer += dt
 
+
     def reset_emote(self):
         self.emote_timer = 0
         self.emote_interval = randrange(2, 10)
 
+
     def reset_walk(self):
         self.walk_timer = 0
         self.walk_interval = randrange(5, 20)
+
 
     def update_current_action(self,dt):
         #Update current action
@@ -85,28 +89,7 @@ class AwakeState(AbstractState):
         pass
             
 
-    def pet_movement(self, dt):
-        if self.target_x is not None and self.on_ground:
-            dx = self.target_x - self.rect.centerx
-            adx = abs(dx)
-            speed = self.walk_speed
 
-            if adx <= self.x_tol:
-                # We're within tolerance
-                self.arrival_timer += dt
-                if self.arrival_timer >= .5:  # dwell time in seconds
-                    self.rect.centerx = self.target_x
-                    self.target_x = None
-                    self.arrival_timer = 0
-            else:
-                # Outside tolerance, reset dwell timer
-                self.arrival_timer = 0
-
-            if adx < self.start_easing_distance:
-                dist_factor = adx / self.start_easing_distance
-                speed = (self.walk_speed * dist_factor) + 1
-
-            self.velocity.x += math.copysign(speed, dx)
             
 
     def _animation(self, dt):
