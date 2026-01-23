@@ -112,6 +112,7 @@ class Pet(PhysicsEntity):
     def update_tick(self, dt):
         super().update_tick(dt)
         self.clamp_stats()
+        self.update_angle(dt)
 
         self.current_state.update(dt)
 
@@ -148,6 +149,29 @@ class Pet(PhysicsEntity):
         rotated_image = pygame.transform.rotate(image, self.angle)
         rotated_rect = rotated_image.get_rect(center=self.rect.center)
         return rotated_image, rotated_rect
+    
+    def update_angle(self, dt):
+        if self.picked_up:
+            # Horizontal "swing" amount
+            swing = self.throw_velocity.x
+
+            # Compute target tilt from velocity
+            # Example: velocity.x 0→400 maps to 0° → -20°
+            max_tilt = 40
+            target_angle = max(-max_tilt, min(max_tilt, -swing * 0.1))
+
+            # Smooth interpolation toward target angle
+            angle_speed = 10  # bigger = snappier
+            self.angle += (target_angle - self.angle) * angle_speed * dt
+
+        else:
+            # Ease angle back toward 0 when not picked up
+            restore_speed = 6
+            self.angle += (0 - self.angle) * restore_speed * dt
+
+            # Snap tiny almost-zero angles fully to 0
+            if abs(self.angle) < 0.2:
+                self.angle = 0
 
 
     def _draw_debug_info(self, surfaces):

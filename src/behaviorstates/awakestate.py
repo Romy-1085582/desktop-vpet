@@ -1,9 +1,10 @@
 import pygame
 import json
-from random import randrange
+from random import randrange, choice
 from abstractstate import AbstractState
 import math
 from petactions.petaction import PetAction
+from event_types import EventTypes
 
 class AwakeState(AbstractState):
     def __init__(self, pet):
@@ -18,6 +19,10 @@ class AwakeState(AbstractState):
         self.emote_timer = 0
         self.emote_interval = randrange(2, 10)
 
+    def subscribe_to_events(self):
+        self.event_bus.subscribe(EventTypes.MOVE_START, self.on_move_to)
+        self.event_bus.subscribe(EventTypes.PET_HOP, self.hop_in_place)
+        self.event_bus.subscribe(EventTypes.BROADCAST_LOCATION, self._on_locate_entity)
 
     def update(self, dt):
         if self.current_action is not None:
@@ -27,13 +32,35 @@ class AwakeState(AbstractState):
             self.update_stat_tick(dt)
             self._animation(dt)
             self._set_target()
-            self.update_angle(dt)
             self.update_behavior()
-            
-        self.picked_up_angle_timer += dt
+            self.picked_up_angle_timer += dt
+
+        if self.pet.on_ground:
+            if self.emote_timer >= self.emote_interval:
+                self.current_action = choice(self.pet_actions)
+                self.reset_emote()
+            if self.walk_timer >= self.walk_interval:
+                walkchoice = randrange(1, 5)
+                if walkchoice <= 4:
+                    range = (self.pet.rect.x - (100 * walkchoice), self.pet.rect.x + (100 * walkchoice))
+                else:
+                    range = (70, 1850)  # Assuming screen width of 1920
+                if range[0] < 70 or range[1] > 1850:
+                    range = (70, 1850)
+
+                self.pet.target_x = randrange(range[0], range[1])  # Assuming screen width of 1920
+                self.reset_walk()
+                
         self.walk_timer += dt
         self.emote_timer += dt
 
+    def reset_emote(self):
+        self.emote_timer = 0
+        self.emote_interval = randrange(2, 10)
+
+    def reset_walk(self):
+        self.walk_timer = 0
+        self.walk_interval = randrange(5, 20)
 
     def update_current_action(self,dt):
         #Update current action
@@ -153,28 +180,6 @@ class AwakeState(AbstractState):
             self.toy_memory.append(toyitem)
 
 
-    def update_angle(self, dt):
-        if self.picked_up:
-            # Horizontal "swing" amount
-            swing = self.throw_velocity.x
-
-            # Compute target tilt from velocity
-            # Example: velocity.x 0→400 maps to 0° → -20°
-            max_tilt = 40
-            target_angle = max(-max_tilt, min(max_tilt, -swing * 0.1))
-
-            # Smooth interpolation toward target angle
-            angle_speed = 10  # bigger = snappier
-            self.angle += (target_angle - self.angle) * angle_speed * dt
-
-        else:
-            # Ease angle back toward 0 when not picked up
-            restore_speed = 6
-            self.angle += (0 - self.angle) * restore_speed * dt
-
-            # Snap tiny almost-zero angles fully to 0
-            if abs(self.angle) < 0.2:
-                self.angle = 0
 
         
 
