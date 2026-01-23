@@ -61,6 +61,14 @@ class Pet(PhysicsEntity):
         self.behavior_stack = []
         self.add_state(ContentState(self))
 
+        # Reworking some features - Adding some states hard-coded.
+        # It'll have 4 MODES - Wander, In-Action, In-Locked-Action, Sleep. Wandering will allow for walking around, In-Action has the pet performing a temporary action (i.e. emoting), 
+        # In-Locked-Action will be for when the pet is working or otherwise locked to an action, and Sleep will be for when the pet is resting. Wander is the default state.
+
+        # Then, the pet will have 'flags' to indicate its current state and any special conditions affecting its behavior.
+        # These are Hungry, Bored, Sleepy, Dirty, Unhappy, etc.
+
+
         #Animation
         REL_PATH = "assets/sprites/"
         #load as PIL images first
