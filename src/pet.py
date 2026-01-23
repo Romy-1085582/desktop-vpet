@@ -5,11 +5,10 @@ from singletons.event_bus_singleton import EVENTBUS
 from event_manager import GameEvent
 from event_types import EventTypes
 from load_files import LoadFiles
+from behaviorstates.awakestate import AwakeState
+from behaviorstates.sleepstate import SleepState
 import PIL.Image
 
-from behaviorstates.contentstate import ContentState
-from behaviorstates.hungrystate import HungryState
-from behaviorstates.playstate import PlayState
 import math
 
 #from behaviorstates.idlestate import IdleState
@@ -39,6 +38,7 @@ class Pet(PhysicsEntity):
         self.hunger = 100
         self.play = 100
         self.sleep = 100
+
         self.stat_update_timer = 3
         self.stat_tick_elapsed = 0
 
@@ -58,22 +58,19 @@ class Pet(PhysicsEntity):
         self.food_memory = []
         self.toy_memory = []
 
-        self.behavior_stack = []
-        self.add_state(ContentState(self))
 
         # Reworking some features - Adding some states hard-coded.
         # It'll have 4 MODES - Wander, In-Action, In-Locked-Action, Sleep. Wandering will allow for walking around, In-Action has the pet performing a temporary action (i.e. emoting), 
         # In-Locked-Action will be for when the pet is working or otherwise locked to an action, and Sleep will be for when the pet is resting. Wander is the default state.
 
         # Then, the pet will have 'flags' to indicate its current state and any special conditions affecting its behavior.
-        # These are Hungry, Bored, Sleepy, Dirty, Unhappy, etc.
-        
+        # These are Hungry, Bored, Sleepy, Unhappy, etc.
+        self.behaviour_states = {"WANDER": AwakeState(self), "SLEEP": SleepState(self)}
         self.current_state = "WANDER"
         self.state_flags = {
             "HUNGRY": False,
             "BORED": False,
             "SLEEPY": False,
-            "DIRTY": False,
             "UNHAPPY": False
         }
 
@@ -115,190 +112,9 @@ class Pet(PhysicsEntity):
     def update_tick(self, dt):
         super().update_tick(dt)
 
-        if self.current_state == "WANDER":
-            self.pet_movement(dt)
-            self.update_stat_tick(dt)
-            self._animation(dt)
-            self._set_target()
-            self.update_state_stack(dt)
-            self.update_angle(dt)
-            self.clamp_stats()
-            self.update_behavior()
         if self.current_state == "SLEEP":
             pass # Sleep behavior to be implemented
 
-        self.picked_up_angle_timer += dt
-
-    def update_stat_tick(self, dt):
-        self.stat_tick_elapsed += dt
-
-        if self.stat_tick_elapsed >= self.stat_update_timer:
-            #Have the various stats of this crreeature tick up after the timer has elapsed. Does this change with the 'state' of the pet, I.E. Asleep/awake?
-            self.hunger -= self.hunger_drain
-            self.play -= self.boredom_drain
-            # self.sleep -= self.sleep_drain
-
-            self.stat_tick_elapsed = 0
-
-    def update_behavior(self):
-        is_hungry = any(isinstance(s, HungryState) for s in self.behavior_stack)
-
-        # Add HungryState when hunger drops below threshold
-        if self.hunger < 80:
-            if not is_hungry:
-                self.add_state(HungryState(self))
-
-        # Remove HungryState when hunger rises above threshold
-        elif self.hunger >= 90:
-            for s in list(self.behavior_stack):
-                if isinstance(s, HungryState):
-                    self.remove_state(s)
-        
-        if self.play < 60: 
-            if not any(isinstance(s, PlayState) for s in self.behavior_stack):
-                self.add_state(PlayState(self))
-        elif self.play >= 80:
-            for s in list(self.behavior_stack):
-                if isinstance(s, PlayState):
-                    self.remove_state(s)
-
-
-        # Add UpsetState here once implemented        
-        # if self.hunger or self.play < 40:
-        #    self.add_state(UpsetState(self))
-
-        # if self.hunger >= 50 and self.play >= 50:
-        #     for state in self.behavior_stack:
-        #         if isinstance(state, UpsetState):
-        #             self.remove_state(state)
-         #            self.add_state(ContentState(self))
-
-
-
-
-
-    def update_state_stack(self, dt):
-        for state in self.behavior_stack:
-            state.update(dt)
-
-    def add_state(self, new_state):
-        self.behavior_stack.append(new_state)
-        new_state.enter()
-    
-    def remove_state(self, state):
-        if self.behavior_stack:
-            state.exit()
-            self.behavior_stack.remove(state)
-            
-
-    def clamp_stats(self):
-        self.hunger = max(0, min(100, self.hunger))
-        self.play = max(0, min(100, self.play))
-        self.sleep = max(0, min(100, self.sleep))
-
-    def pet_movement(self, dt):
-        if self.target_x is not None and self.on_ground:
-            dx = self.target_x - self.rect.centerx
-            adx = abs(dx)
-            speed = self.walk_speed
-
-            if adx <= self.x_tol:
-                # We're within tolerance
-                self.arrival_timer += dt
-                if self.arrival_timer >= .5:  # dwell time in seconds
-                    self.rect.centerx = self.target_x
-                    self.target_x = None
-                    self.arrival_timer = 0
-            else:
-                # Outside tolerance, reset dwell timer
-                self.arrival_timer = 0
-
-            if adx < self.start_easing_distance:
-                dist_factor = adx / self.start_easing_distance
-                speed = (self.walk_speed * dist_factor) + 1
-
-            self.velocity.x += math.copysign(speed, dx)
-            
-
-    def _animation(self, dt):
-        if self.state == "IDLE":
-            pass
-
-        # picked up overrides everything
-        if self.picked_up:
-            self.current_sprite = self.spr_airdown
-
-        # airborne states
-        elif self.velocity.y <= -1:
-            self.current_sprite = self.spr_airup
-        elif self.velocity.y >= 1:
-            self.current_sprite = self.spr_airdown
-
-        else:
-            # We are basically on the ground
-            if abs(self.velocity.x) > 1:  # walking horizontally
-                self.walk_timer += dt
-                if self.walk_timer >= self.walk_interval:
-                    self.walk_timer = 0
-                    self.walk_frame = (self.walk_frame + 1) % 4
-
-                if self.walk_frame == 0:
-                    self.current_sprite = self.spr_walk1
-                elif self.walk_frame == 2:
-                    self.current_sprite = self.spr_walk2
-                else:
-                    self.current_sprite = self.spr_idle
-
-            else:
-                # standing still
-                self.current_sprite = self.spr_idle
-
-        # flip direction
-        self.facing_left = self.velocity.x <= 0
-
-    def _set_target(self):
-        if self.behavior == "seek_food":
-            if self.food_memory:
-                self.target_x = self.food_memory[0].centerx
-            
-
-    def on_move_to(self, event):
-        x = event.payload.get("x")
-        if x is not None:
-            self.target_x = x
-
-    def hop_in_place(self, strength):
-        if not self.on_ground:
-            return
-        self.rect.y -= 2  # Nudge up to ensure we leave the ground
-        self.velocity.y -= self.jump_height * strength
-
-    def _on_locate_entity(self, event):
-        if event.payload["TYPE"] == "FOOD":
-            fooditem = event.payload["SELF"]
-            for item in self.food_memory:
-                if fooditem == item:
-                    return
-            self.food_memory.append(fooditem)
-        elif event.payload["TYPE"] == "TOY":
-            toyitem = event.payload["SELF"]
-            for item in self.toy_memory:
-                if toyitem == item:
-                    return
-            self.toy_memory.append(toyitem)
-
-    def debug_feed(self, event):
-        self.hunger -= 20
-        print("lowering hunger...")
-    
-    def debug_play(self, event):
-        self.play -= 20
-        print("lowering play...")
-
-
-    def debug_sleep(self, event):
-        self.sleep -= 20
-        print("lowering sleep...")
 
 
     def rotate_around_point(self, image):
@@ -309,30 +125,12 @@ class Pet(PhysicsEntity):
         rotated_rect = rotated_image.get_rect(center=self.rect.center)
         return rotated_image, rotated_rect
     
-    def update_angle(self, dt):
-        if self.picked_up:
-            # Horizontal "swing" amount
-            swing = self.throw_velocity.x
 
-            # Compute target tilt from velocity
-            # Example: velocity.x 0→400 maps to 0° → -20°
-            max_tilt = 40
-            target_angle = max(-max_tilt, min(max_tilt, -swing * 0.1))
-
-            # Smooth interpolation toward target angle
-            angle_speed = 10  # bigger = snappier
-            self.angle += (target_angle - self.angle) * angle_speed * dt
-
-        else:
-            # Ease angle back toward 0 when not picked up
-            restore_speed = 6
-            self.angle += (0 - self.angle) * restore_speed * dt
-
-            # Snap tiny almost-zero angles fully to 0
-            if abs(self.angle) < 0.2:
-                self.angle = 0
+   
 
     
+#   Universal ==============================================================================================================================================================================
+
     def draw(self, surfaces):
         draw_sprite = self.current_sprite
         draw_rect = self.rect
@@ -344,6 +142,7 @@ class Pet(PhysicsEntity):
 
         if self.debug_mode:
             self._draw_debug_info(surfaces)
+
 
     def _draw_debug_info(self, surfaces):
         """Draws the pet's behaviour state and stats above its head for debugging."""
@@ -360,12 +159,23 @@ class Pet(PhysicsEntity):
             surfaces["ui"].blit(text_surf, (self.rect.x, self.rect.y - 20 * (len(info_lines) - i)))
 
 
-
     def on_debug_mode_toggle(self, event):
         self.debug_mode = not self.debug_mode
 
-    
 
+    def debug_feed(self, event):
+        self.hunger -= 20
+        print("lowering hunger...")
+
+
+    def debug_play(self, event):
+        self.play -= 20
+        print("lowering play...")
+
+
+    def debug_sleep(self, event):
+        self.sleep -= 20
+        print("lowering sleep...")
 
 
 
