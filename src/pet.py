@@ -89,11 +89,9 @@ class Pet(PhysicsEntity):
         self.event_bus.subscribe(EventTypes.MOVE_START, self.on_move_to)
         self.event_bus.subscribe(EventTypes.PET_HOP, self.hop_in_place)
         self.event_bus.subscribe(EventTypes.BROADCAST_LOCATION, self._on_locate_entity)
-
         self.event_bus.subscribe(EventTypes.DEBUG_FEED, self.debug_feed)
         self.event_bus.subscribe(EventTypes.DEBUG_PLAY, self.debug_play)
         self.event_bus.subscribe(EventTypes.DEBUG_SLEEP, self.debug_sleep)
-
         self.event_bus.subscribe(EventTypes.TOGGLE_DEBUG_MODE, self.on_debug_mode_toggle)
 
 
