@@ -66,7 +66,7 @@ class Pet(PhysicsEntity):
         # Then, the pet will have 'flags' to indicate its current state and any special conditions affecting its behavior.
         # These are Hungry, Bored, Sleepy, Unhappy, etc.
         self.behaviour_states = {"WANDER": AwakeState(self), "SLEEP": SleepState(self)}
-        self.current_state = "WANDER"
+        self.current_state = self.behaviour_states["WANDER"]
         self.state_flags = {
             "HUNGRY": False,
             "BORED": False,
@@ -111,19 +111,17 @@ class Pet(PhysicsEntity):
 
     def update_tick(self, dt):
         super().update_tick(dt)
+        self.clamp_stats()
 
-        if self.current_state == "SLEEP":
-            pass # Sleep behavior to be implemented
+        self.current_state.update(dt)
 
 
+    def clamp_stats(self):
+        self.hunger = max(0, min(100, self.hunger))
+        self.play = max(0, min(100, self.play))
+        self.sleep = max(0, min(100, self.sleep))
 
-    def rotate_around_point(self, image):
-        """
-        Rotates the sprite around its center using self.angle.
-        """
-        rotated_image = pygame.transform.rotate(image, self.angle)
-        rotated_rect = rotated_image.get_rect(center=self.rect.center)
-        return rotated_image, rotated_rect
+
     
 
    
@@ -142,6 +140,14 @@ class Pet(PhysicsEntity):
 
         if self.debug_mode:
             self._draw_debug_info(surfaces)
+
+    def rotate_around_point(self, image):
+        """
+        Rotates the sprite around its center using self.angle.
+        """
+        rotated_image = pygame.transform.rotate(image, self.angle)
+        rotated_rect = rotated_image.get_rect(center=self.rect.center)
+        return rotated_image, rotated_rect
 
 
     def _draw_debug_info(self, surfaces):

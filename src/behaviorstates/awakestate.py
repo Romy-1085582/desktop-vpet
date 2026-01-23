@@ -1,5 +1,6 @@
 import pygame
 import json
+from random import randrange
 from abstractstate import AbstractState
 import math
 from petactions.petaction import PetAction
@@ -10,11 +11,13 @@ class AwakeState(AbstractState):
         self.pet_actions = []
         self.current_action = None
 
-    def enter(self):
-        self.pet.current_state = "WANDER"
+        #Emote/Action data
+        self.walk_timer = 0
+        self.walk_interval = randrange(5, 20)
 
-    def exit(self):
-        pass
+        self.emote_timer = 0
+        self.emote_interval = randrange(2, 10)
+
 
     def update(self, dt):
         if self.current_action is not None:
@@ -25,13 +28,12 @@ class AwakeState(AbstractState):
             self._animation(dt)
             self._set_target()
             self.update_angle(dt)
-            self.clamp_stats()
             self.update_behavior()
             
         self.picked_up_angle_timer += dt
+        self.walk_timer += dt
+        self.emote_timer += dt
 
-    def draw(self, screen):
-        pass
 
     def update_current_action(self,dt):
         #Update current action
@@ -49,18 +51,12 @@ class AwakeState(AbstractState):
             self.hunger -= self.hunger_drain
             self.play -= self.boredom_drain
             # self.sleep -= self.sleep_drain
-
             self.stat_tick_elapsed = 0
+
 
     def update_behavior(self):
         pass
             
-
-    def clamp_stats(self):
-        self.hunger = max(0, min(100, self.hunger))
-        self.play = max(0, min(100, self.play))
-        self.sleep = max(0, min(100, self.sleep))
-
 
     def pet_movement(self, dt):
         if self.target_x is not None and self.on_ground:
@@ -122,6 +118,7 @@ class AwakeState(AbstractState):
         # flip direction
         self.facing_left = self.velocity.x <= 0
 
+
     def _set_target(self):
         if self.behavior == "seek_food":
             if self.food_memory:
@@ -154,6 +151,7 @@ class AwakeState(AbstractState):
                 if toyitem == item:
                     return
             self.toy_memory.append(toyitem)
+
 
     def update_angle(self, dt):
         if self.picked_up:
