@@ -8,7 +8,7 @@ class PetAction:
         self.frames_duration = frames_duration  # Duration of each frame in percentage of the total duration
         self.frames_duration_in_seconds = [duration * duration for duration in frames_duration]
         self.valid_moods = valid_moods  # List of valid moods for the action
-
+        
         self.duration_remaining = duration # Time remaining for the action
 
         self.valid_action = True # Flag to indicate if the action is valid
