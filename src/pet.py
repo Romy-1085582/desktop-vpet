@@ -99,8 +99,6 @@ class Pet(PhysicsEntity):
 
     def subscribe_to_events(self):
         super().subscribe_to_events()
-        self.event_bus.subscribe(EventTypes.MOVE_START, self.on_move_to)
-        self.event_bus.subscribe(EventTypes.PET_HOP, self.hop_in_place)
         self.event_bus.subscribe(EventTypes.BROADCAST_LOCATION, self._on_locate_entity)
         self.event_bus.subscribe(EventTypes.DEBUG_FEED, self.debug_feed)
         self.event_bus.subscribe(EventTypes.DEBUG_PLAY, self.debug_play)
@@ -153,6 +151,20 @@ class Pet(PhysicsEntity):
             self.velocity.x += math.copysign(speed, dx)
     
 #   Universal ==============================================================================================================================================================================
+
+    def _on_locate_entity(self, event):
+        if event.payload["TYPE"] == "FOOD":
+            fooditem = event.payload["SELF"]
+            for item in self.food_memory:
+                if fooditem == item:
+                    return
+            self.food_memory.append(fooditem)
+        elif event.payload["TYPE"] == "TOY":
+            toyitem = event.payload["SELF"]
+            for item in self.toy_memory:
+                if toyitem == item:
+                    return
+            self.toy_memory.append(toyitem)
 
     def draw(self, surfaces):
         draw_sprite = self.current_sprite

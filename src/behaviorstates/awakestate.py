@@ -1,7 +1,7 @@
 import pygame
 import json
 from random import randrange, choice
-from abstractstate import AbstractState
+from behaviorstates.abstractstate import AbstractState
 import math
 from petactions.petaction import PetAction
 from event_types import EventTypes
@@ -13,8 +13,8 @@ class AwakeState(AbstractState):
         self.current_action = None
 
         #Emote/Action data
-        self.walk_timer = 0
-        self.walk_interval = randrange(5, 20)
+        self.wander_timer = 0
+        self.wander_interval = randrange(5, 20)
 
         self.emote_timer = 0
         self.emote_interval = randrange(2, 10)
@@ -22,7 +22,6 @@ class AwakeState(AbstractState):
     def subscribe_to_events(self):
         self.event_bus.subscribe(EventTypes.MOVE_START, self.on_move_to)
         self.event_bus.subscribe(EventTypes.PET_HOP, self.hop_in_place)
-        self.event_bus.subscribe(EventTypes.BROADCAST_LOCATION, self._on_locate_entity)
 
 
     def update(self, dt):
@@ -33,14 +32,14 @@ class AwakeState(AbstractState):
             self._animation(dt)
             self._set_target()
             self.update_behavior()
-            self.picked_up_angle_timer += dt
+            self.pet.picked_up_angle_timer += dt
 
 
         if self.pet.on_ground:
             if self.emote_timer >= self.emote_interval:
                 self.current_action = choice(self.pet_actions)
                 self.reset_emote()
-            if self.walk_timer >= self.walk_interval:
+            if self.wander_timer >= self.wander_interval:
                 walkchoice = randrange(1, 5)
                 if walkchoice <= 4:
                     range = (self.pet.rect.x - (100 * walkchoice), self.pet.rect.x + (100 * walkchoice))
@@ -50,9 +49,9 @@ class AwakeState(AbstractState):
                     range = (70, 1850)
 
                 self.pet.target_x = randrange(range[0], range[1])  # Assuming screen width of 1920
-                self.reset_walk()
-                
-        self.walk_timer += dt
+                self.reset_wander()
+
+        self.wander_timer += dt
         self.emote_timer += dt
 
 
@@ -61,9 +60,9 @@ class AwakeState(AbstractState):
         self.emote_interval = randrange(2, 10)
 
 
-    def reset_walk(self):
-        self.walk_timer = 0
-        self.walk_interval = randrange(5, 20)
+    def reset_wander(self):
+        self.wander_timer = 0
+        self.wander_interval = randrange(5, 20)
 
 
     def update_current_action(self,dt):
@@ -75,14 +74,14 @@ class AwakeState(AbstractState):
 
     
     def update_stat_tick(self, dt):
-        self.stat_tick_elapsed += dt
+        self.pet.stat_tick_elapsed += dt
 
-        if self.stat_tick_elapsed >= self.stat_update_timer:
+        if self.pet.stat_tick_elapsed >= self.pet.stat_update_timer:
             #Have the various stats of this crreeature tick up after the timer has elapsed. Does this change with the 'state' of the pet, I.E. Asleep/awake?
-            self.hunger -= self.hunger_drain
-            self.play -= self.boredom_drain
-            # self.sleep -= self.sleep_drain
-            self.stat_tick_elapsed = 0
+            self.pet.hunger -= self.pet.hunger_drain
+            self.pet.play -= self.pet.boredom_drain
+            # self.pet.sleep -= self.sleep_drain
+            self.pet.stat_tick_elapsed = 0
 
 
     def update_behavior(self):
@@ -93,47 +92,46 @@ class AwakeState(AbstractState):
             
 
     def _animation(self, dt):
-        if self.state == "IDLE":
+        if self.pet.state == "IDLE":
             pass
 
         # picked up overrides everything
-        if self.picked_up:
-            self.current_sprite = self.spr_airdown
+        if self.pet.picked_up:
+            self.pet.current_sprite = self.pet.spr_airdown
 
         # airborne states
-        elif self.velocity.y <= -1:
-            self.current_sprite = self.spr_airup
-        elif self.velocity.y >= 1:
-            self.current_sprite = self.spr_airdown
+        elif self.pet.velocity.y <= -1:
+            self.pet.current_sprite = self.pet.spr_airup
+        elif self.pet.velocity.y >= 1:
+            self.pet.current_sprite = self.pet.spr_airdown
 
         else:
             # We are basically on the ground
-            if abs(self.velocity.x) > 1:  # walking horizontally
-                self.walk_timer += dt
-                if self.walk_timer >= self.walk_interval:
-                    self.walk_timer = 0
-                    self.walk_frame = (self.walk_frame + 1) % 4
+            if abs(self.pet.velocity.x) > 1:  # walking horizontally
+                self.pet.walk_timer += dt
+                if self.pet.walk_timer >= self.pet.walk_interval:
+                    self.pet.walk_timer = 0
+                    self.pet.walk_frame = (self.pet.walk_frame + 1) % 4
 
-                if self.walk_frame == 0:
-                    self.current_sprite = self.spr_walk1
-                elif self.walk_frame == 2:
-                    self.current_sprite = self.spr_walk2
+                if self.pet.walk_frame == 0:
+                    self.pet.current_sprite = self.pet.spr_walk1
+                elif self.pet.walk_frame == 2:
+                    self.pet.current_sprite = self.pet.spr_walk2
                 else:
-                    self.current_sprite = self.spr_idle
+                    self.pet.current_sprite = self.pet.spr_idle
 
             else:
                 # standing still
-                self.current_sprite = self.spr_idle
+                self.pet.current_sprite = self.pet.spr_idle
 
         # flip direction
-        self.facing_left = self.velocity.x <= 0
+        self.pet.facing_left = self.pet.velocity.x <= 0
 
 
     def _set_target(self):
-        if self.behavior == "seek_food":
-            if self.food_memory:
-                self.target_x = self.food_memory[0].centerx
-            
+        if self.pet.behavior == "seek_food":
+            if self.pet.food_memory:
+                self.target_x = self.pet.food_memory[0].centerx
 
     def on_move_to(self, event):
         x = event.payload.get("x")
@@ -148,19 +146,7 @@ class AwakeState(AbstractState):
         self.velocity.y -= self.jump_height * strength
 
 
-    def _on_locate_entity(self, event):
-        if event.payload["TYPE"] == "FOOD":
-            fooditem = event.payload["SELF"]
-            for item in self.food_memory:
-                if fooditem == item:
-                    return
-            self.food_memory.append(fooditem)
-        elif event.payload["TYPE"] == "TOY":
-            toyitem = event.payload["SELF"]
-            for item in self.toy_memory:
-                if toyitem == item:
-                    return
-            self.toy_memory.append(toyitem)
+
 
 
 

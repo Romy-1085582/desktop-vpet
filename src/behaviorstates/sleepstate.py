@@ -1,5 +1,5 @@
 import pygame
-from abstractstate import AbstractState
+from behaviorstates.abstractstate import AbstractState
 from petactions.petaction import PetAction
 
 class SleepState(AbstractState):
