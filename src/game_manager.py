@@ -58,6 +58,8 @@ class GameManager:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"inventory"}))
             elif event.key == pygame.K_BACKQUOTE:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"debug"}))
+            elif event.key == pygame.K_h:
+                EVENTBUS.publish(GameEvent(EventTypes.FOLD_PET_HOME))
 
     def update(self, dt):
 #       self.state_manager.update(dt)

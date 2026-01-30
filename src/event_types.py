@@ -22,6 +22,7 @@ class EventTypes:
     TOGGLE_PIXELATION = "toggle_pixelation"
     INCREASE_PIXELATION = "increase_pixelation"
     DECREASE_PIXELATION = "decrease_pixelation"
+    FOLD_PET_HOME = "fold_pet_home"
 
     DEBUG_FEED = "debug_feed"
     DEBUG_PLAY = "debug_play"
