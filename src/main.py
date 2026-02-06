@@ -1,4 +1,6 @@
 import pygame
+import os
+os.environ["SDL_MOUSE_FOCUS_CLICKTHROUGH"] = "1"
 import win32api
 import win32con
 import win32gui

@@ -20,16 +20,34 @@ class UIPetHome(UIElement):
         self.height = self.debug_texture.get_height()
         self.mask_colour = (255, 255, 255, 255)
 
-        self.pet_home_open = True
-        self.changing_state = False
-        self.radius_open = 480
-        self.radius_closed = 280
-        self.amplitude_open = 2
-        self.amplitude_closed = 1
+        self.states = {
+            "open": {
+                "radius": 480,
+                "amplitude": 2
+            },
+            "closed": {
+                "radius": 280,
+                "amplitude": 1
+            },
+            "minimized": {
+                "radius": 15,
+                "amplitude": 2
+            },
+            "peek": {
+                "radius": 50,
+                "amplitude": 1
+            }
+        }
+
+        self.current_state = "open"
+        self.target_state = "open"
 
         self.transition_timer = 1.0
         self.transition_duration = 0.6  # seconds
+        self.changing_state = False
 
+        self.radius = self.states[self.current_state]["radius"]
+        self.amplitude = self.states[self.current_state]["amplitude"]
 
         super().__init__(x, y, self.width, self.height)
 
@@ -37,31 +55,43 @@ class UIPetHome(UIElement):
     def subscribe_to_events(self):
         super().subscribe_to_events()
         EVENTBUS.subscribe(EventTypes.FOLD_PET_HOME, self.on_fold_pet_home)
+        EVENTBUS.subscribe(EventTypes.MINIMIZE_PET_HOME, self.on_minimize_pet_home)
 
 
     def update(self, dt):
         super().update(dt)
+        self.minimized_peek_back_up(dt)
         if not self.changing_state:
             return
+        
 
         self.transition_timer += dt / self.transition_duration
         t = min(self.transition_timer, 1.0)
 
         eased = 0.5 - math.cos(t * math.pi) * 0.5
 
-        radiusstart = self.radius_closed if self.pet_home_open else self.radius_open
-        radiusend   = self.radius_open   if self.pet_home_open else self.radius_closed
+        start = self.states[self.start_state]
+        end   = self.states[self.target_state]
 
-        self.radius = radiusstart + (radiusend - radiusstart) * eased
-
-        amplitudestart = self.amplitude_closed if self.pet_home_open else self.amplitude_open
-        amplitudeend   = self.amplitude_open   if self.pet_home_open else self.amplitude_closed
-
-        self.amplitude = amplitudestart + (amplitudeend - amplitudestart) * eased
+        self.radius = start["radius"] + (end["radius"] - start["radius"]) * eased
+        self.amplitude = start["amplitude"] + (end["amplitude"] - start["amplitude"]) * eased
 
         if t >= 1.0:
-            self.radius = radiusend
+            self.current_state = self.target_state
             self.changing_state = False
+            
+    def minimized_peek_back_up(self, dt):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        hitbox_rect = pygame.Rect(self.x + self.width - self.radius, self.y + self.height - self.radius, self.radius, self.radius)
+        if self.current_state == "minimized":
+            if hitbox_rect.collidepoint((mouse_x, mouse_y)):
+                self.set_state("peek")
+        elif self.current_state == "peek" and not click[0]:  # Left mouse button not pressed
+            if not hitbox_rect.collidepoint((mouse_x, mouse_y)):
+                self.set_state("minimized")
+        elif self.current_state == "peek" and click[0]:  # Left mouse button is pressed
+            self.set_state("open")
         
 
     def draw(self, surface):
@@ -81,16 +111,37 @@ class UIPetHome(UIElement):
         )
 
         texture_copy = self.debug_texture.copy()
-
         texture_copy.blit(mask_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-
         ui_surface.blit(texture_copy, (self.x, self.y))
 
 
     def on_fold_pet_home(self, event):
+        if self.current_state == "open":
+            self.set_state("closed")
+        else:
+            self.set_state("open")
+
+
+    def on_minimize_pet_home(self, event):
         if self.changing_state:
             return
-        self.pet_home_open = not self.pet_home_open
-        self.changing_state = True
+
+        if self.current_state == "minimized":
+            self.set_state("open")
+        else:
+            self.set_state("minimized")
+
+
+    def set_state(self, new_state):
+        if new_state == self.current_state:
+            return
+        if self.changing_state:
+            return
+
+        self.start_state = self.current_state
+        self.target_state = new_state
+
         self.transition_timer = 0.0
-        print(self.pet_home_open)
+        self.changing_state = True
+
+
