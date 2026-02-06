@@ -24,8 +24,10 @@ class UIPetHome(UIElement):
         self.changing_state = False
         self.radius_open = 480
         self.radius_closed = 280
+        self.radius_minimized = 20
         self.amplitude_open = 2
         self.amplitude_closed = 1
+        self.amplitude_minimized = 0.2
 
         self.transition_timer = 1.0
         self.transition_duration = 0.6  # seconds
