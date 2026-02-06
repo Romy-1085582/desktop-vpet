@@ -60,6 +60,8 @@ class GameManager:
                 EVENTBUS.publish(GameEvent(EventTypes.TOGGLE_UI_ELEMENT, {"TYPE":"debug"}))
             elif event.key == pygame.K_h:
                 EVENTBUS.publish(GameEvent(EventTypes.FOLD_PET_HOME))
+            elif event.key == pygame.K_j:
+                EVENTBUS.publish(GameEvent(EventTypes.MINIMIZE_PET_HOME))
 
     def update(self, dt):
 #       self.state_manager.update(dt)

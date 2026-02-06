@@ -1,4 +1,6 @@
 import pygame
+import os
+os.environ["SDL_MOUSE_FOCUS_CLICKTHROUGH"] = "1"
 import win32api
 import win32con
 import win32gui
@@ -7,6 +9,7 @@ from render_pipeline import RenderPipeline
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent
+from singletons.game_data_singleton import METADATA
 
 
 #set constants 
@@ -19,6 +22,7 @@ class Main():
         info = pygame.display.Info()
         w = info.current_w
         h = info.current_h
+        METADATA.screensize = (w, h)
         self.screen = pygame.display.set_mode((w, h), pygame.NOFRAME)
         self.render_surface = pygame.Surface((w, h), pygame.SRCALPHA)
         self.hwnd = self._windows_config()
