@@ -1,10 +1,13 @@
 import pygame
 from singletons.event_bus_singleton import EVENTBUS
+from singletons.game_data_singleton import METADATA
 from event_types import EventTypes
 from event_manager import GameEvent
 from ui.ui_element import UIElement
 from ui.ui_inventory import UIInventory
 from ui.ui_debug import UIDebug
+from ui.ui_pethome import UIPetHome
+
 
 class UIManager:
     def __init__(self):
@@ -14,6 +17,7 @@ class UIManager:
         # types of ui elements
         self.ui_elements.append(UIInventory(x=100, y=100))
         self.ui_elements.append(UIDebug(x=1000, y=100))
+        self.ui_elements.append(UIPetHome(x=METADATA.screensize[0] - 500, y=METADATA.screensize[1] - 500))
 
     def subscribe_to_events(self):
         EVENTBUS.subscribe(EventTypes.MOUSE_DOWN, self.on_mouse_down)
