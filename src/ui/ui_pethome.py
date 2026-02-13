@@ -1,6 +1,6 @@
 import math
 import pygame
-from ui.ui_element import UIElement
+from ui.ui_elementabstract import UIElement
 from ui.ui_button import UIButton
 from ui.ui_tooltip import UITooltip
 from singletons.event_bus_singleton import EVENTBUS
@@ -38,6 +38,7 @@ class UIPetHome(UIElement):
                 "amplitude": 1
             }
         }
+        
 
         self.current_state = "open"
         self.target_state = "open"

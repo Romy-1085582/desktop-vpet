@@ -1,5 +1,5 @@
 import pygame
-from ui.ui_element import UIElement
+from ui.ui_panelabstract import UIPanel
 from ui.ui_button import UIButton
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
@@ -7,7 +7,7 @@ from event_manager import GameEvent
 from entity_data import FOOD_DATA
 from entity_data import TOY_DATA
 
-class UITooltip(UIElement):
+class UITooltip(UIPanel):
     def __init__(self, x, y):
 
         self.type = "tooltip"
@@ -21,7 +21,8 @@ class UITooltip(UIElement):
         
         super().__init__(x, y, self.width, self.height)
 
-        self.close_button_rect = None  # No close button for tooltip
+        self.has_close_button = False  # No close button for tooltip
+        self.close_button_rect = None
 
     def subscribe_to_events(self):
         super().subscribe_to_events()

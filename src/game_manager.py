@@ -2,7 +2,7 @@ import pygame
 from entity_manager import EntityManager
 from singletons.event_bus_singleton import EVENTBUS
 from event_manager import GameEvent
-from ui.UI_manager import UIManager
+from ui.ui_manager import UIManager
 from event_types import EventTypes
 from render_pipeline import RenderPipeline
 

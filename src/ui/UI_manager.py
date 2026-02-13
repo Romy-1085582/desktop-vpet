@@ -3,7 +3,7 @@ from singletons.event_bus_singleton import EVENTBUS
 from singletons.game_data_singleton import METADATA
 from event_types import EventTypes
 from event_manager import GameEvent
-from ui.ui_element import UIElement
+from ui.ui_panelabstract import UIPanel
 from ui.ui_inventory import UIInventory
 from ui.ui_debug import UIDebug
 from ui.ui_pethome import UIPetHome
@@ -71,7 +71,7 @@ class UIManager:
         if type == "inventory":
             new_element = UIInventory(x, y) #Just one type for now
         else:
-            new_element = UIElement(x, y, 300, 400) # fallback
+            new_element = UIPanel(x, y, 300, 400) # fallback
         self.add_ui_element(new_element)
 
     def on_toggle_ui_element(self, event):

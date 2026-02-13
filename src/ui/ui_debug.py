@@ -1,10 +1,10 @@
-from ui.ui_element import UIElement
+from ui.ui_panelabstract import UIPanel
 from ui.ui_button import UIButton
 from singletons.event_bus_singleton import EVENTBUS
 from event_types import EventTypes
 from event_manager import GameEvent
 
-class UIDebug(UIElement):
+class UIDebug(UIPanel):
     def __init__(self, x, y):
 
         self.type = "debug"
