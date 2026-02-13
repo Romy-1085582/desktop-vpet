@@ -5,12 +5,12 @@ from event_types import EventTypes
 from ui.ui_elementabstract import UIElement
 
 class UIRadialButton(UIElement):
-    def __init__(self, x, y, radius):
-        super().__init__(x, y, radius * 2, radius * 2)
-        self.radius = radius
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+        self.radius = width // 2
         self.hovered = False
-        self.sprite = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA) #overwrite this with own sprite.
-        pygame.draw.circle(self.sprite, (255, 255, 255), (radius, radius), radius)
+        self.sprite = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA) #overwrite this with own sprite.
+        pygame.draw.circle(self.sprite, (255, 255, 255), (self.radius, self.radius), self.radius)
 
     def draw(self, surfaces):
         surfaces["ui"].blit(self.sprite, (self.x, self.y))

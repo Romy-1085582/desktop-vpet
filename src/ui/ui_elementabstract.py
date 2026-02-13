@@ -11,6 +11,7 @@ class UIElement:
         self.y = y
         self.width = width
         self.height = height
+        self.active = True
 
         self.rect = pygame.Rect(x, y, width, height)
 
@@ -23,7 +24,7 @@ class UIElement:
     def update(self, dt):
         if not self.active:
             return
-
+        
         self.rect.topleft = (self.x, self.y)
         self.rect.size = (self.width, self.height)
 

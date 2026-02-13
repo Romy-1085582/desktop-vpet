@@ -1,5 +1,6 @@
 import math
 import pygame
+from ui.radialbuttons.ui_minimizebutton import UIMinimizeButton
 from ui.ui_elementabstract import UIElement
 from ui.ui_button import UIButton
 from ui.ui_tooltip import UITooltip
@@ -55,9 +56,27 @@ class UIPetHome(UIElement):
 
         super().__init__(x, y, self.width, self.height)
 
+        self.initialize_radial_buttons()
+
+
     def initialize_radial_buttons(self):
-        pass
-    
+        self.button_positions = self.calculate_button_positions()
+        # minimize_button = UIMinimizeButton(x=self.x + self.width - 50, y=self.y - 10)
+        # EVENTBUS.publish(GameEvent(EventTypes.ADD_UI_ELEMENT, {"ELEMENT": minimize_button}))
+
+    def calculate_button_positions(self):
+        button_positions = []
+        buttons = 6
+        angle_step = 90 / buttons
+        start_angle = 190
+        for i in range(buttons):
+            angle = math.radians(i * angle_step) - math.radians(start_angle)
+            x = self.rect.bottomright[0] + math.cos(angle) * (self.radius + 40)
+            y = self.rect.bottomright[1] + math.sin(angle) * (self.radius + 40)
+            button_positions.append((x, y))
+        print("Calculated button positions:", button_positions)
+        return button_positions
+
     def subscribe_to_events(self):
         super().subscribe_to_events()
         EVENTBUS.subscribe(EventTypes.FOLD_PET_HOME, self.on_fold_pet_home)
@@ -119,6 +138,9 @@ class UIPetHome(UIElement):
         texture_copy = self.debug_texture.copy()
         texture_copy.blit(mask_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         ui_surface.blit(texture_copy, (self.x, self.y))
+
+        for pos in self.button_positions:
+            pygame.draw.circle(ui_surface, (255, 0, 0), (int(pos[0]), int(pos[1])), 20)
 
 
     def on_fold_pet_home(self, event):

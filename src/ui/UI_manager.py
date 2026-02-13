@@ -57,22 +57,9 @@ class UIManager:
 
 
     def on_add_ui_element(self, event):
-        x = event.payload.get("X", 0)
-        y = event.payload.get("Y", 0)
-        width = event.payload.get("WIDTH", 100)
-        height = event.payload.get("HEIGHT", 100)
-        type = event.payload.get("TYPE", "default")
-        #If this type already exists, remove that one instead to toggle.
-        for element in self.ui_elements:
-            if element.type == type:
-                self.remove_ui_element(element)
-                return
-
-        if type == "inventory":
-            new_element = UIInventory(x, y) #Just one type for now
-        else:
-            new_element = UIPanel(x, y, 300, 400) # fallback
-        self.add_ui_element(new_element)
+       element = event.payload.get("ELEMENT")
+       if element:
+           self.add_ui_element(element)
 
     def on_toggle_ui_element(self, event):
         type = event.payload.get("TYPE", "default")
