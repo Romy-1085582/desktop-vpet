@@ -4,6 +4,7 @@ from ui.ui_elementabstract import UIElement
 from ui.ui_button import UIButton
 from ui.ui_tooltip import UITooltip
 from singletons.event_bus_singleton import EVENTBUS
+from singletons.game_data_singleton import GAMEDATA
 from event_types import EventTypes
 from event_manager import GameEvent
 from ui.ui_effects.cloud_effect import draw_cloud_polygon
@@ -13,7 +14,10 @@ class UIPetHome(UIElement):
     def __init__(self, x, y):
 
         self.type = "pethome"
-        self.radius = 480
+        self.screen_height = GAMEDATA.screensize[1]
+        self.default_radius = self.screen_height / 2.25
+        self.radius = self.default_radius
+
         self.amplitude = 2
         self.debug_texture = pygame.image.load("assets/ui/pethometest.png").convert_alpha()
         self.width = self.debug_texture.get_width()
@@ -22,24 +26,23 @@ class UIPetHome(UIElement):
 
         self.states = {
             "open": {
-                "radius": 480,
+                "radius": self.default_radius,
                 "amplitude": 2
             },
             "closed": {
-                "radius": 280,
+                "radius": self.default_radius / 1.7,
                 "amplitude": 1
             },
             "minimized": {
-                "radius": 15,
+                "radius": self.default_radius / 32,
                 "amplitude": 2
             },
             "peek": {
-                "radius": 50,
+                "radius": self.default_radius / 9,
                 "amplitude": 1
             }
         }
         
-
         self.current_state = "open"
         self.target_state = "open"
 
@@ -52,6 +55,8 @@ class UIPetHome(UIElement):
 
         super().__init__(x, y, self.width, self.height)
 
+    def initialize_radial_buttons(self):
+        pass
     
     def subscribe_to_events(self):
         super().subscribe_to_events()
@@ -144,5 +149,4 @@ class UIPetHome(UIElement):
 
         self.transition_timer = 0.0
         self.changing_state = True
-
 

@@ -9,7 +9,7 @@ class UIRadialButton(UIElement):
         super().__init__(x, y, radius * 2, radius * 2)
         self.radius = radius
         self.hovered = False
-        self.sprite = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        self.sprite = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA) #overwrite this with own sprite.
         pygame.draw.circle(self.sprite, (255, 255, 255), (radius, radius), radius)
 
     def draw(self, surfaces):
@@ -17,10 +17,6 @@ class UIRadialButton(UIElement):
 
     def update(self, dt):
         super().update(dt)
-        self.update_sprite()
 
-    def update_sprite(self):
-        self.sprite.fill((0, 0, 0, 0))
-        pygame.draw.circle(self.sprite, (255, 255, 255), (self.radius, self.radius), self.radius)
-        if self.hovered:
-            pygame.draw.circle(self.sprite, (255, 0, 0), (self.radius, self.radius), self.radius, 5)
+    def clicked(self, mx, my):
+        return super().clicked(mx, my)

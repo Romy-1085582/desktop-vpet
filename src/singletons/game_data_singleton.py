@@ -5,4 +5,4 @@ class GameData:
         self.screensize = None
 
 
-METADATA = GameData()
+GAMEDATA = GameData()
